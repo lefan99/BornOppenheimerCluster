@@ -171,8 +171,7 @@ def main():
 	energies, states = eigsh(Ham, k=para.eigenstates_relative, which='SA')
 	t2 = time()
 	t = (t2-t1)/60
-
-	#Sort the energies and states. Depending on which solver was used, they might be unsorted.
+	print('finished! time elapsed:', t)#Sort the energies and states. Depending on which solver was used, they might be unsorted.
 	#If they aren't this doesn't do anything.
 	order = np.argsort(energies)
 	energies = energies[order]
@@ -200,10 +199,10 @@ def main():
 
 	#Save the selected MLS state of this COM/potential combination and its energy for further use in construction
 	#of the Born-Oppenheimer potential energy surface and complete wave function
-	os.makedirs('data/states/pot{}'.format(current_pot), exist_ok=True)
-	os.makedirs('data/energies/pot{}'.format(current_pot), exist_ok=True)
-	np.save('data/states/pot{}/com{}.npy'.format(current_pot, current_com), states[:,:,0,mls])
-	np.save('data/energies/pot{}/com{}.npy'.format(current_pot, current_com), energies[mls])
+	os.makedirs('../hamiltonian/rel_data/states/pot{}'.format(current_pot), exist_ok=True)
+	os.makedirs('../hamiltonian/rel_data/energies/pot{}'.format(current_pot), exist_ok=True)
+	np.save('../hamiltonian/rel_data/states/pot{}/com{}.npy'.format(current_pot, current_com), states[:,:,0,mls])
+	np.save('../hamiltonian/rel_data/energies/pot{}/com{}.npy'.format(current_pot, current_com), energies[mls])
 
 if __name__ == '__main__':
 	main()

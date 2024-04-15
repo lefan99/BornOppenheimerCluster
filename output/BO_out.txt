@@ -1,9 +1,0 @@
-[INFO] Module Python/3.10.4 loaded.
-Traceback (most recent call last):
-  File "/rwthfs/rz/cluster/home/kk472919/PhD/Born-Oppenheimer - Cluster/solver.py", line 209, in <module>
-    main()
-  File "/rwthfs/rz/cluster/home/kk472919/PhD/Born-Oppenheimer - Cluster/solver.py", line 139, in main
-    GRID = grid(para.m, para.x_width, para.n, para.y_width, 1, 0)
-  File "/rwthfs/rz/cluster/home/kk472919/PhD/Born-Oppenheimer - Cluster/solver.py", line 25, in __init__
-    self.x, self.dx = np.linspace(-x_width, x_width, x_points ,endpoint=True)
-ValueError: too many values to unpack (expected 2)

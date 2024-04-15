@@ -6,9 +6,13 @@
 
 #SBATCH --mem-per-cpu=3900M
 
-#SBATCH --time=1-00:00:00
+#SBATCH --time=00:10:00
 
-#SBATCH --array=1-100
+#SBATCH --output=output/COM_calc_${SLURM_ARRAY_TASK_ID}_%j.out
+#
+#SBATCH --error=output/COM_calc_${SLURM_ARRAY_TASK_ID}_%j.err
+
+#SBATCH --array=0-99
 
 #SBATCH --output=output/out_${SLURM_ARRAY_TASK_ID}.txt
 #
