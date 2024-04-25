@@ -13,6 +13,16 @@ def V_x(x, f_x, sigma):
 	Mode box has linear growth only in a box sized sigma and constant potential at the edges'''
 	return f_x*erf(x/sigma)
 
+def V_dot( f_x , x , y , sigma_x , sigma_y ):
+    ''' Dot confinement Potential for 0D confinement case. Preliminary potetnial model of the one dimensional potential 
+    enveloped by a gaussian profile'''
+
+    return V_x( x, f_x , sigma_x) * np.exp( -0.5 * y**2 / (sigma_y**2))  
+
+
+
+
+
 def interpolation(x, n):
 	'''Return the interpolated potential from the COMSOL Data for a flat positional array x. Parameter n determines the top-Gate voltage.'''
 

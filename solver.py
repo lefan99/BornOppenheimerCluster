@@ -17,16 +17,18 @@ import confining_potential as conf
 class grid():
 	'''Simple Class to hold the necessary data for the construction of the grid. Given the necessary geometric input parameters,
 	which are defined in parameters.py, this just sets up the necessary meshgrids for the 1D confinement case.'''
-	def __init__(self, x_points, x_width, y_points, y_width, com_points, com_width):
+	def __init__(self, x_points, x_width, y_points, y_width, com_x_points, com_x_width , com_y_points , com_y_width):
 		self.dx = 2*x_width / x_points
 		self.dy = 2*y_width / y_points 
-		self.dcom = 2*com_width / com_points
+		self.dxcom = 2*com_x_width / com_x_points
+                self.dycom = 2*com_y_width / com_y_points
 
 		self.x = np.linspace(-x_width, x_width, x_points ,endpoint=True)
 		self.y = np.linspace(-y_width, y_width, y_points ,endpoint=True)
-		self.com = np.linspace(-com_width, com_width, com_points ,endpoint=True)
-
-		self.X, self.Y, self.COM = np.meshgrid(self.x, self.y, self.com, indexing='ij')
+		self.xcom = np.linspace(-com_x_width, com_x_width, com_x_points ,endpoint=True)
+                self.ycom = np.linespace(-com_y_width , com_y_width , com_y_points , endpoint = True)
+           
+		self.X, self.Y, self.COM = np.meshgrid(self.x, self.y, self.xcom, self.ycom, indexing='ij')
 
 class laplacian():
 	'''Hamiltonian class that takes care of the construction of the kinetic Hamiltonian in the framework of scipy sparse matrices. 
@@ -136,37 +138,48 @@ def Keyldish(r):
 
 def main():
 	#Init Grid with COM set to zero
-	GRID = grid(para.m, para.x_width, para.n, para.y_width, 1, 0)
+	GRID = grid(para.m, para.x_width, para.n, para.y_width, 1, 0 , 1 , 0)
 
 	#Build (relative) Laplacian and Keyldish potential
 	LAP = laplacian(GRID)
 	V_keyldish = diags(Keyldish(np.sqrt(GRID.X.reshape(-1)**2 + GRID.Y.reshape(-1)**2)))
 
 	#Specify adiabatic dependence and parameter dependence of the potential
-	BO_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
-
+	BOx_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
+        BOy_array  = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
+    
 	#The idea here is that sys.argv[1] will specify the current adiabatic center of mass
 	#position, while sys.argv[2] will specify the current potential specification.
 	#That way we can easily parallelize the task of solving the relative Hamiltonian
 	#by assigning a job for each combination of COM position/potential
 	print(sys.argv[1])
 	print(sys.argv[2])
-	current_com = BO_array[int(sys.argv[1])]
-	current_pot = int(sys.argv[2])
+	current_xcom = BOy_array[int(sys.argv[1])]
+	current_ycom = BOx_array[int(sys.argv[2])]
+	current_pot = int(sys.argv[3])
 
 	#Build Hamiltonian for erf case
 	if para.potential_mode == 'erf':
-		V_el_conf  = diags(-para.e * conf.V_x( para.m_valence/para.M*GRID.X.reshape(-1)+    current_com, para.fields[current_pot], para.sigma[current_pot]))
-		V_hl_conf  = diags( para.e * conf.V_x(-para.m_conduction/para.M*GRID.X.reshape(-1)+    current_com, para.fields[current_pot], para.sigma[current_pot]))
+		V_el_conf  = diags(-para.e * conf.V_x( para.m_valence/para.M*GRID.X.reshape(-1)+    current_xcom, para.fields[current_pot], para.sigma[current_pot]))
+		V_hl_conf  = diags( para.e * conf.V_x(-para.m_conduction/para.M*GRID.X.reshape(-1)+    current_xcom, para.fields[current_pot], para.sigma[current_pot]))
 		Ham = LAP.Hkin + V_keyldish + V_el_conf + V_hl_conf
 
 	#Build Hamiltonian for interpolation case
 	if para.potential_mode == 'interp':
-		V_el_conf  = diags(-para.e * conf.interpolation( para.m_valence/para.M*GRID.X.reshape(-1)+    current_com, para.potential_index[current_pot]))
-		V_hl_conf  = diags( para.e * conf.interpolation(-para.m_conduction/para.M*GRID.X.reshape(-1)+    current_com, para.potential_index[current_pot]))
+		V_el_conf  = diags(-para.e * conf.interpolation( para.m_valence/para.M*GRID.X.reshape(-1)+    current_xcom, para.potential_index[current_pot]))
+		V_hl_conf  = diags( para.e * conf.interpolation(-para.m_conduction/para.M*GRID.X.reshape(-1)+    current_xcom, para.potential_index[current_pot]))
 		Ham = LAP.Hkin + V_keyldish + V_el_conf + V_hl_conf
 
+
+        if para.potential_mode == 'dot':
+
+                V_el_conf = diags  -para.e * conf.V_dot( para.fields[current_pot] , 
+
+
+
+
 	#Solve relative Hamiltonian
+
 	t1 = time()
 	energies, states = eigsh(Ham, k=para.eigenstates_relative, which='SA')
 	t2 = time()
