@@ -202,9 +202,11 @@ def main():
     #[x,y,1,n] where the first two indices correspond to relative coordinates, com direction is trivial
     #and n labels the eigenstates. This reshaping is consistent with the flattened encoding,
     #since we used the numpy unravel routine to define the Hamiltonian.
+    
     new_shape = GRID.X.shape + (para.eigenstates_relative,)
+    print('shape of states' ,states.shape ,'new shape' , new_shape, 'GRID.X.shape' , GRID.X.shape , 'eigenstates_relative' , para.eigenstates_relative) 
     states = np.reshape(states, newshape=(new_shape))
-
+    print('shape reshape' , states.shape)
     #Normalize the exciton wave function using trapezoidal integration.
     states_squared = np.abs(states)**2
     normalize = states_squared[:,:,0,:]
@@ -214,7 +216,7 @@ def main():
     states = states / np.sqrt(normalize)
 
     #Find the most localized state at the origin. This will correspond to the lowest exciton bound state.
-    k_l_square = np.abs(states[int(para.m/2),int(para.n/2),0,:])**2
+    k_l_square = np.abs(states[int(para.m/2),int(para.n/2),0, 0,:])**2
     optical_order = np.argsort(k_l_square)
     mls = np.argmax(k_l_square)
 
@@ -222,8 +224,8 @@ def main():
     #of the Born-Oppenheimer potential energy surface and complete wave function
     os.makedirs('../hamiltonian/rel_data/states/pot{}'.format(current_pot), exist_ok=True)
     os.makedirs('../hamiltonian/rel_data/energies/pot{}'.format(current_pot), exist_ok=True)
-    np.save('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(current_pot, current_xcom , current_ycom), states[:,:,0,mls])
+    np.save('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(current_pot, current_xcom , current_ycom), states[:,:,0, 0,mls])
     np.save('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(current_pot, current_xcom , current_ycom), energies[mls])
-
+    print(states.shape , 'shape end') 
 if __name__ == '__main__':
     main()
