@@ -119,15 +119,15 @@ BO_energy = []
 BO_states = np.zeros([para.m , para.n , para.o])
 BO_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
 f_x = 0.4
-pot_index = sys.argv[1]
+pot_index = int(sys.argv[1])
 for j in range(len(BO_array)):
 
    i = BO_array[j]
 
-   if os.path.exists('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(pot_index, i, BO_array[0])):
+   if os.path.exists('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], i, BO_array[0])):
        
-        BO_energy.append( np.load('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(pot_index, i,  BO_array[0])) )
-        state = np.load('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(pot_index, i, BO_array[0]))
+        BO_energy.append( np.load('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], i,  BO_array[0])) )
+        state = np.load('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], i, BO_array[0]))
 
         BO_states[:,:,j] = state * np.sign(state)
 
@@ -176,6 +176,8 @@ normalize = np.trapz(normalize, GRID_1.x, axis=0)
 states = states / np.sqrt(normalize)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
+Os.makedirs('../hamiltonian/statesData/', exist_ok=True)
+os.makedirs('../hamiltonian/energiesData/', exist_ok=True)
 np.save('../hamiltonian/statesData/V_0={}'.format(f_x), states)
 np.save('../hamiltonian/energiesData/V_0={}'.format(f_x), energies)
 

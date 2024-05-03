@@ -122,6 +122,7 @@ class laplacian():
                             origin_left_xcom_neighbour  = np.ravel_multi_index((x_index, y_index, xcom_index-1, ycom_index ), dimensions, mode='raise')
                             self._append((1 / grid.dxcom**2 *(-para.h_bar**2/(2*para.M))), origin, origin_left_xcom_neighbour)
                         
+
                         if ycom_index+1 != dimensions[3]: #Checking for upper bound
                             origin_right_ycom_neighbour = np.ravel_multi_index((x_index, y_index, xcom_index+1, ycom_index ), dimensions, mode='raise')
                             self._append((1 / grid.dycom**2 *(-para.h_bar**2/(2*para.M))), origin, origin_right_ycom_neighbour)
@@ -142,6 +143,90 @@ def Keyldish(r):
     '''Just the definition of the Keldysh potential in real space in terms of Bessel functions.'''
     V = -para.c * np.pi / (2*para.epsilon_r*para.r_0) * (struve(0, r/para.r_0) - yv(0, r/para.r_0))
     return V
+
+
+class solver():
+    '''Solver class for a single COM point (X,Y). Solves the relative part of the BO_approximation.'''
+
+    def __init__(self , xcom_index , ycom_index , field_index):
+
+        self.BOx_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
+        self.BOy_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
+        self.current_xcom = self.BOy_array[xcom_index]
+        self.current_ycom = self.BOx_array[ycom_index]
+        self.current_pot = para.fields[field_index]
+        self.sigma = para.fields[field_index]
+        self.GRID = grid(para.m, para.x_width, para.n, para.y_width, 1, 0 , 1 , 0)
+        self.lap = laplacian(self.GRID)
+        self.Vkey = diags(Keyldish(np.sqrt(self.GRID.X.reshape(-1)**2 + self.GRID.Y.reshape(-1)**2))) 
+        self._potential()
+        self.H = self.lap.Hkin + self.Vkey + self.V_hl_conf + self.V_el_conf 
+        print('calculating COM(x direction) index' ,xcom_index, 'at position' , self.current_xcom)
+        print('calculating COM(y direction) index' ,ycom_index, 'at position' , self.current_ycom)
+        self._solve()
+        self._order()
+        self._mls_state()
+
+
+    def _potential(self): 
+        '''method that determines the potential based on the paramteres passed from the parameters.py file'''
+        if para.potential_mode == 'erf':
+            self.V_el_conf= diags(-para.e * conf.V_x( para.m_valence/para.M*self.GRID.X.reshape(-1)+self.current_xcom, self.current_pot, self.sigma))
+            self.V_hl_conf= diags( para.e * conf.V_x(-para.m_conduction/para.M*self.GRID.X.reshape(-1)+self.current_xcom, self.current_pot, self.sigma))
+
+        #Build Hamiltonian for interpolation case
+        if para.potential_mode == 'interp':
+            self.V_el_conf= diags(-para.e * conf.interpolation( para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.potential_index[field_index]))
+            self.V_hl_conf= diags( para.e * conf.interpolation(-para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.potential_index[field_index]))
+
+        #0D confinement case using the erf with a gaussain envelope in the Y axis
+        if para.potential_mode == 'dot':
+            self.V_el_conf = diags(-para.e * conf.V_dot( self.current_pot , para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.m_valence/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
+            self.V_hl_conf = diags(-para.e * conf.V_dot( self.current_pot , -para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, -para.m_conduction/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
+
+    
+    def _solve(self):
+        '''Method used to solve the Eigenvalue problem using scipy eigsh'''
+
+        t1  = time()
+        self.energies , self.states = eigsh(self.H, k=para.eigenstates_relative, which='SA')
+        t2 = time()
+        t = (t2-t1)/60
+        print( 'finished! time elapsed (min): ' , t)
+
+    def _order(self):
+        '''Method used to order the results'''
+
+        order = np.argsort(self.energies)
+        self.energies = self.energies[order]
+        self.states = self.states[:, order]
+        
+        #normalize the states
+        new_shape = self.GRID.X.shape + (para.eigenstates_relative,)
+        self.states = np.reshape(self.states, newshape=(new_shape))
+        states_squared = np.abs(self.states)**2
+        normalize = states_squared[:,:,0,:]
+        normalize = np.trapz(normalize , self.GRID.y, axis=1)
+        normalize = np.trapz(normalize,  self.GRID.x, axis=0)
+        
+        self.states = self.states /np.sqrt(normalize)
+
+
+    def _mls_state(self):
+        '''Method for determining the most localized state at the middlei and saving as a .npy file'''
+
+        k_l_square = np.abs(self.states[int(para.m/2),int(para.n/2),0, 0,:])**2
+        optical_order = np.argsort(k_l_square)
+        mls = np.argmax(k_l_square)
+        
+
+        os.makedirs('../hamiltonian/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs('../hamiltonian/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
+        np.save('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
+
+
+
 
 def main():
     #Init Grid with COM set to zero
@@ -227,5 +312,5 @@ def main():
     np.save('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(current_pot, current_xcom , current_ycom), states[:,:,0, 0,mls])
     np.save('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(current_pot, current_xcom , current_ycom), energies[mls])
     print(states.shape , 'shape end') 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#   main()
