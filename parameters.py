@@ -38,11 +38,12 @@ com_width = 100e-9
 
 eigenstates_relative = 200
 
-potential_mode = 'erf'
+potential_mode = 'dot'
+
 if potential_mode == 'erf':
     #fields = np.arange(0e-3, 1025e-3, 25e-3)
     #fields = np.round(fields, decimals=3)
-    fields = [400e-3]
+    fields = [425e-3]
     sigma = [20e-9 * np.sqrt(2)]*len(fields)
 
 if potential_mode == 'interp':
@@ -50,8 +51,7 @@ if potential_mode == 'interp':
     potential_index = [0]
 
 if potential_mode == 'dot':
-
-    fields = [400e-3]
+    fields = [425e-3]
     sigma = [20e-9 * np.sqrt(2)]*len(fields)
     
 

@@ -6,6 +6,8 @@
 
 #SBATCH --ntasks=1
 
+#SBATCH --cpus-per-task=96
+
 #SBATCH --nodes=1
 
 #SBATCH --mem-per-cpu=3900M
@@ -24,4 +26,4 @@
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 
 
 ml load Python
-python relative.py ${SLURM_ARRAY_TASK_ID} 0 0 
+python relative.py ${SLURM_ARRAY_TASK_ID} 100 0 

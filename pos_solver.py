@@ -196,6 +196,7 @@ ax.grid(True)
 ax.set_ylabel(r'$|\phi(X,r=0)|$ [1/$nm^(3/2)$]')
 ax.set_xlabel(r'X [nm]')
 plt.tight_layout()
+plt.show()
 fig.savefig('../plots/COM_groundstate/mls_at_overlap_fx_{}_generalized.pdf'.format(f_x))
 
 #Plot the field dependence of the oscillator strength density.
