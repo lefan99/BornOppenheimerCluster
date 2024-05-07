@@ -1,6 +1,7 @@
 import solver
 import sys
 
+
 def main():
     
     for y_com_index in range(int(sys.argv[2])): 
