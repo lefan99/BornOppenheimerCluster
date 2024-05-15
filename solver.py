@@ -124,11 +124,11 @@ class laplacian():
                         
 
                         if ycom_index+1 != dimensions[3]: #Checking for upper bound
-                            origin_right_ycom_neighbour = np.ravel_multi_index((x_index, y_index, xcom_index+1, ycom_index ), dimensions, mode='raise')
+                            origin_right_ycom_neighbour = np.ravel_multi_index((x_index, y_index, xcom_index, ycom_index+1 ), dimensions, mode='raise')
                             self._append((1 / grid.dycom**2 *(-para.h_bar**2/(2*para.M))), origin, origin_right_ycom_neighbour)
 
                         if ycom_index-1 != -1: #Checking for lower bound
-                            origin_left_ycom_neighbour  = np.ravel_multi_index((x_index, y_index, xcom_index-1, ycom_index ), dimensions, mode='raise')
+                            origin_left_ycom_neighbour  = np.ravel_multi_index((x_index, y_index, xcom_index, ycom_index-1 ), dimensions, mode='raise')
                             self._append((1 / grid.dycom**2 *(-para.h_bar**2/(2*para.M))), origin, origin_left_ycom_neighbour)
 
 
@@ -182,7 +182,7 @@ class solver():
         #0D confinement case using the erf with a gaussain envelope in the Y axis
         if para.potential_mode == 'dot':
             self.V_el_conf = diags(-para.e * conf.V_dot( self.current_pot , para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.m_valence/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
-            self.V_hl_conf = diags(-para.e * conf.V_dot( self.current_pot , -para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, -para.m_conduction/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
+            self.V_hl_conf = diags(para.e * conf.V_dot( self.current_pot , -para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, -para.m_conduction/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
 
     
     def _solve(self):
@@ -265,7 +265,7 @@ def main():
     #0D confinement case using the erf with a gaussain envelope in the Y axis
     if para.potential_mode == 'dot':
         V_el_conf = diags(-para.e * conf.V_dot( para.fields[current_pot] , para.m_valence/para.M*GRID.X.reshape(-1) + current_xcom, para.m_valence/para.M*GRID.X.reshape(-1) + current_xcom, para.sigma[current_pot] , para.sigma[current_pot]))
-        V_hl_conf = diags(-para.e * conf.V_dot( para.fields[current_pot] , -para.m_conduction/para.M*GRID.Y.reshape(-1) + current_ycom, -para.m_conduction/para.M*GRID.Y.reshape(-1) + current_ycom, para.sigma[current_pot] , para.sigma[current_pot]))
+        V_hl_conf = diags(para.e * conf.V_dot( para.fields[current_pot] , -para.m_conduction/para.M*GRID.Y.reshape(-1) + current_ycom, -para.m_conduction/para.M*GRID.Y.reshape(-1) + current_ycom, para.sigma[current_pot] , para.sigma[current_pot]))
         Ham = LAP.Hkin + V_keyldish + V_el_conf + V_hl_conf
 
 

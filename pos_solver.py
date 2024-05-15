@@ -115,57 +115,62 @@ class Hamiltonian():
 GRID_1 = grid(para.m , para.x_width , para.n , para.y_width , 1 , 0 , 1 ,0)
 
 #Import the data from the COM calculations, convention follows the local version written by timo 
-BO_energy = []
-BO_states = np.zeros([para.m , para.n , para.o])
+BO_energy = np.zeros([para.o , para.o]) 
+BO_states = np.zeros([para.m , para.n , para.o , para.o])
 BO_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
-f_x = 0.4
+f_x = 0.425
 pot_index = int(sys.argv[1])
-for j in range(len(BO_array)):
+for i , x in enumerate( BO_array):
 
-   i = BO_array[j]
+    for j , y in enumerate(BO_array):
 
-   if os.path.exists('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], i, BO_array[0])):
+        if os.path.exists('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y)):
        
-        BO_energy.append( np.load('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], i,  BO_array[0])) )
-        state = np.load('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], i, BO_array[0]))
+            BO_energy[ i , j] = np.load('../hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x,  y)) 
+            state = np.load('../hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y ))
 
-        BO_states[:,:,j] = state * np.sign(state)
-
+            BO_states[:,:, i , j] = state * np.sign(state)
+print('finished loading')
 
 #print(len(BO_energy) , len(BO_states))
-BO_energy = np.asarray( BO_energy)
+#BO_energy = np.asarray( BO_energy)
 #print('energy ' ,BO_energy ,'states', BO_states) 
 
 #set up grid and hamiltonian to solve the positional schrodinger equation
 
-GRID = grid(1, 0 ,1 ,0 , para.o, para.com_width , 1, 0)
+plt.imshow(BO_energy, cmap = 'autumn' ,interpolation = 'gaussian') 
+plt.savefig('dot_confine_surface.pdf')
+print('start building Hamiltonian')
+
+GRID = grid(1, 0 ,1 ,0 , para.o, para.com_width , para.o, para.com_width )
 Ham = laplacian(GRID)
-V_BO = diags(BO_energy)
+V_BO = diags(BO_energy.flatten())
 
 
 #print( 'HKIN' , Ham.Hkin, 'potential'  , V_BO ,'bo energy surface',  BO_energy)
 H = Ham.Hkin + V_BO
 energies, states = eigsh(H , k = 10, which='SA') 
 
-print(energies/para.joul_to_eV)
+print('finished!')
 
 #plot the BO energy surface
-fig, ax = plt.subplots()
-ax.plot(BO_array*1e9, BO_energy/para.joul_to_eV)
-ax.axhline(energies[0]/para.joul_to_eV)
+#fig, ax = plt.subplots()
+#ax.plot(BO_array*1e9, BO_energy/para.joul_to_eV)
+#ax.axhline(energies[0]/para.joul_to_eV)
 
 
+#for i in energies:
 
-for i in energies:
-
-    ax.axhline(i/para.joul_to_eV)
-fig.savefig('../plots/COM_potential/test_fx_{}.pdf'.format(pot_index))
+#   ax.axhline(i/para.joul_to_eV)
+#plt.show()
+#fig.savefig('../plots/COM_potential/dot_confine_fx_{}.pdf'.format(pot_index))
 
 
 #calculate the final state as a product of the POS and REL state
-shape = (para.m, para.n , para.o , 1) 
+shape = (para.m, para.n , para.o , para.o, 1) 
 BO_states = np.reshape(BO_states , newshape = (shape) )
-shape_states = ( 1, 1 , para.o , 10 ) 
+shape_states = ( 1, 1 , para.o , para.o, 10 ) 
+states = np.reshape( states , newshape = (shape_states)) 
 states = BO_states * states
 
 #Normalize the exciton wave function using trapezoidal integration.
@@ -176,7 +181,7 @@ normalize = np.trapz(normalize, GRID_1.x, axis=0)
 states = states / np.sqrt(normalize)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-Os.makedirs('../hamiltonian/statesData/', exist_ok=True)
+os.makedirs('../hamiltonian/statesData/', exist_ok=True)
 os.makedirs('../hamiltonian/energiesData/', exist_ok=True)
 np.save('../hamiltonian/statesData/V_0={}'.format(f_x), states)
 np.save('../hamiltonian/energiesData/V_0={}'.format(f_x), energies)
@@ -190,14 +195,14 @@ k_l_square = k_l_square / 1e9
 
 #Make a plot of the obtained lowest lying motional state at relative coordinate r=0.
 fig, ax = plt.subplots()
-ax.plot(BO_array / 1e-9, states[int(para.m/2), int(para.n/2), :, 0] * (1e-9)**(3/2), label='f_x={}'.format(f_x))
+#ax.plot(BO_array / 1e-9, states[int(para.m/2), int(para.n/2), :, 0] * (1e-9)**(3/2), label='f_x={}'.format(f_x))
+ax.imshow( states[ 0 , 0 , : , : ,0]**2 , interpolation='gaussian')
 ax.legend()
 ax.grid(True)
 ax.set_ylabel(r'$|\phi(X,r=0)|$ [1/$nm^(3/2)$]')
 ax.set_xlabel(r'X [nm]')
 plt.tight_layout()
-plt.show()
-fig.savefig('../plots/COM_groundstate/mls_at_overlap_fx_{}_generalized.pdf'.format(f_x))
+fig.savefig('mls_at_overlap_dot.pdf'.format(f_x))
 
 #Plot the field dependence of the oscillator strength density.
 #fig, ax = plt.subplots()

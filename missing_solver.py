@@ -8,8 +8,8 @@ missing_y = np.load('../missing_y.npy')
 
 
 def main():
-    index = int(sys.argv[1]) * 100
-    for i in range(100): 
+    index = int(sys.argv[1]) * 7
+    for i in range(7): 
         if index+i in range(len(missing_x)):
             solver.solver( missing_x[index+i] , missing_y[index+i]  , 0)
             print( ' calc done for xcom ='  , missing_x[index+i] , 'and ycom' , missing_y[index+i] , 'given as index of BO_array') 
