@@ -133,8 +133,8 @@ def retrieve_array1D(n):
     return BO_energy , BO_states
 
 
-def solve_ham(BO_energy , BO_states , n):
-    ''' solves the POS hamiltonian returns normalized wavefunctions and stores solutions'''
+def solve_ham(BO_energy , BO_states , n , k_energy = 15):
+    ''' solves the POS hamiltonian returns normalized wavefunctions and stores solutions, k_energy determines the amount of eigenvalues that should be solved for'''
     GRID = grid(1, 0 ,1 ,0 , para.o, para.com_width , 1, 0 )
 
     BO_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
@@ -142,10 +142,10 @@ def solve_ham(BO_energy , BO_states , n):
     V_BO = diags(BO_energy.flatten())
 
     H = Ham.Hkin + V_BO
-    energies, states = eigsh(H , k = 10, which='SA') 
+    energies, states = eigsh(H , k = k_energy, which='SA') 
     shape = (para.m, para.n , para.o , 1) 
     BO_states = np.reshape(BO_states , newshape = (shape) )
-    shape_states = ( 1, 1 , para.o, 10 ) 
+    shape_states = ( 1, 1 , para.o, k_energy ) 
     states = np.reshape( states , newshape = (shape_states)) 
     states = BO_states * states
 #Normalize the exciton wave function using trapezoidal integration.

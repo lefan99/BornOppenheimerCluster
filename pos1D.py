@@ -1,7 +1,8 @@
 import pos_solver as ps
 
 
-for n in range(10):
+for n in range(3,13):
 
     energy,states = ps.retrieve_array1D(n)
+    print(energy , states)
     ps.solve_ham( energy , states, n) 

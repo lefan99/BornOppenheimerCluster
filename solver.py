@@ -183,7 +183,7 @@ class solver1D():
         self.energies , self.states = eigsh(self.H, k=para.eigenstates_relative, which='SA')
         t2 = time()
         t = (t2-t1)/60
-        print( 'finished! time elapsed (min): ' , t , 'energy eigenwert':  , self.energies) 
+        print( 'finished! time elapsed (min): ' , t , 'energy eigenwert'  , self.energies) 
 
     def _order(self):
         '''Method used to order the results'''
@@ -209,12 +209,11 @@ class solver1D():
         k_l_square = np.abs(self.states[int(para.m/2),int(para.n/2),0, 0,:])**2
         optical_order = np.argsort(k_l_square)
         mls = np.argmax(k_l_square)
-        
-    def state_safe(self):
-        os.makedirs('../hamiltonian1D/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs('../hamiltonian1D/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save('../hamiltonian1D/rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
-        np.save('../hamiltonian1D/rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
+        print(self.energies[mls])
+        os.makedirs('/hpcwork/kk472919/hamiltonian1D/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs('/hpcwork/kk472919/hamiltonian1D/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save('/hpcwork/kk472919/hamiltonian1D/rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
+        np.save('/hpcwork/kk472919/hamiltonian1D/rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
 
 
 
@@ -295,10 +294,10 @@ class solver():
         mls = np.argmax(k_l_square)
         
 
-        os.makedirs('../hamiltonian/rel_data/states1D/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs('../hamiltonian/rel_data/energies1D/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save('../hamiltonian/rel_data/states1D/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
-        np.save('../hamiltonian/rel_data/energies1D/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
+        os.makedirs('/hpcwork/kk472919/hamiltonian/rel_data/states1D/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs('/hpcwork/kk472919/hamiltonian/rel_data/energies1D/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save('/hpcwork/kk472919/hamiltonian/rel_data/states1D/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
+        np.save('/hpcwork/kk472919/hamiltonian/rel_data/energies1D/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
 
 
 

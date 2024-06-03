@@ -33,17 +33,17 @@ m = 150             # Number of xpoints
 x_width = 20e-9
 n = 150             # Number of ypoints
 y_width = 20e-9
-o = 100             # Number of compoints
-com_width = 100e-9
+o = 200             # Number of compoints
+com_width = 200e-9
 
 eigenstates_relative = 200
 
-potential_mode = 'interp'
+potential_mode = 'erf'
 
 if potential_mode == 'erf':
     #fields = np.arange(0e-3, 1025e-3, 25e-3)
     #fields = np.round(fields, decimals=3)
-    fields = [425e-3 , 0.725]
+    fields = [1.5 , 2 , 3.5 , 4]
     sigma = [20e-9 * np.sqrt(2)]
 
 if potential_mode == 'interp':
