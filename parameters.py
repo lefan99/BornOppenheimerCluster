@@ -33,12 +33,12 @@ m = 150             # Number of xpoints
 x_width = 20e-9
 n = 150             # Number of ypoints
 y_width = 20e-9
-o = 200             # Number of compoints
+o = 300             # Number of compoints
 com_width = 200e-9
 
 eigenstates_relative = 200
 
-potential_mode = 'erf'
+potential_mode = 'dot'
 
 if potential_mode == 'erf':
     #fields = np.arange(0e-3, 1025e-3, 25e-3)
@@ -52,9 +52,11 @@ if potential_mode == 'interp':
     fields = np.linspace(-12,-3 , 10 , dtype = int)
 
     sigma = [20e-9 * np.sqrt(2)]
+
 if potential_mode == 'dot':
+
     fields = [425e-3, 0.725]
-    sigma = [20e-9 * np.sqrt(2)]*len(fields)
+    sigma = 20e-9 * np.sqrt(2)
     
 
 #saved_states = 70

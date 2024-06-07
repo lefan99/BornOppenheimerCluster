@@ -6,7 +6,7 @@
 
 #SBATCH --account=rwth1610
 
-#SBATCH --ntasks=2
+#SBATCH --ntasks=96
 
 ###SBATCH --cpus-per-task=96
 
@@ -14,16 +14,12 @@
 
 #SBATCH --mem-per-cpu=3900M
 
-#SBATCH --time=10:00:00
+#SBATCH --time=1:00:00
 
-#SBATCH --array=0-299
-
-#SBATCH --error=/home/kk472919/PhD/BO_parallel/output/COM_calc_%A_%a.err
-
-#SBATCH --output=/home/kk472919/PhD/BO_parallel/output/REL_out_%A_%a.txt
-
+#SBATCH --error=err_pos2d.txt
+#SBATCH --output=out_pos2D.txt
 
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 
 
 ml load Python
-python -u relative.py ${SLURM_ARRAY_TASK_ID} 300 0
+python -u pos2D.py

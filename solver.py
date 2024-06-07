@@ -294,10 +294,10 @@ class solver():
         mls = np.argmax(k_l_square)
         
 
-        os.makedirs('/hpcwork/kk472919/hamiltonian/rel_data/states1D/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs('/hpcwork/kk472919/hamiltonian/rel_data/energies1D/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save('/hpcwork/kk472919/hamiltonian/rel_data/states1D/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
-        np.save('/hpcwork/kk472919/hamiltonian/rel_data/energies1D/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
+        os.makedirs('/work/kk472919/hamiltonian/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs('/work/kk472919/hamiltonian/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save('/work/kk472919/hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
+        np.save('/work/kk472919/hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
 
 
 

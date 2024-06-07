@@ -16,7 +16,7 @@
 
 #SBATCH --time=07:00:00
 
-#SBATCH --array=0-99
+#SBATCH --array=0-299
 
 #SBATCH --error=/home/kk472919/PhD/BO_parallel/output/COM_calc_%A_%a.err
 
