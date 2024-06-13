@@ -6,7 +6,7 @@
 
 #SBATCH --account=rwth1610
 
-#SBATCH --ntasks=96
+#SBATCH --ntasks=16
 
 ###SBATCH --cpus-per-task=96
 
@@ -22,4 +22,4 @@
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 
 
 ml load Python
-python -u pos2D.py
+python -u combine.py

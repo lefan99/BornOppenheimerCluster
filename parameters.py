@@ -29,16 +29,16 @@ r_0 = 3.9/epsilon_r * 1e-9
 #Simulation Parameters
 #eigenstates=400 #Amount of eigenstates to solve for
 #Geometry
-m = 150             # Number of xpoints
-x_width = 20e-9
-n = 150             # Number of ypoints
-y_width = 20e-9
+m = 300             # Number of xpoints
+x_width = 80e-9
+n = 300             # Number of ypoints
+y_width = 80e-9
 o = 300             # Number of compoints
 com_width = 200e-9
 
 eigenstates_relative = 200
 
-potential_mode = 'dot'
+potential_mode = 'interp'
 
 if potential_mode == 'erf':
     #fields = np.arange(0e-3, 1025e-3, 25e-3)

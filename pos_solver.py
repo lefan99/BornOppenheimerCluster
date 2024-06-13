@@ -165,21 +165,27 @@ def solve_ham2D(BO_energy , BO_states , n , k_energy = 15):
     energies, states = eigsh(H , k = k_energy, which='SA') 
 
     os.makedirs('/work/kk472919/hamiltonian/energiesData/', exist_ok=True)
-    np.save('/work/kk472919/hamiltonian/energiesData/pot{}'.format(para.fields[pot_index]), energies) 
-    os.makedirs('/work/kk472919/temp/', exist = ok)
+    np.save('/work/kk472919/hamiltonian/energiesData/pot{}'.format(para.fields[n]), energies) 
+    os.makedirs('/work/kk472919/temp/', exist_ok = True)
     np.save('/work/kk472919/temp/states.npy', states)
     np.save('/work/kk472919/temp/BO_states.npy', BO_states)
 
 
-def combine2D(n): 
+def combine2D(n, k_energy =15 , i = 0): 
 
-    states = np.load('/work/kk472919/states.npy')
-    BO_states = np.load('/work/kk472919/BO_states.npy')
+    BO_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
+    states = np.load('/work/kk472919/temp/states.npy')
+    BO_states = np.load('/work/kk472919/temp/BO_states.npy')
+    #states = states.astype(np.float32)
+    #BO_states = BO_states.astype(np.float32)
     shape = (para.m, para.n , para.o , para.o , 1) 
     BO_states = np.reshape(BO_states , newshape = (shape) )
     shape_states = ( 1, 1 , para.o, para.o, k_energy ) 
     states = np.reshape( states , newshape = (shape_states)) 
-
+    print('starting loop')
+    BO_states = BO_states[: , : , : ,: ,0]
+    states = states[:,:,:,:,i]
+    print('array mem size: ', BO_states.nbytes , states.nbytes)
     states = BO_states * states
 #Normalize the exciton wave function using trapezoidal integration.
     states_squared = np.abs(states)**2
@@ -189,13 +195,14 @@ def combine2D(n):
     normalize = np.trapz(normalize, GRID_1.y, axis=1)
     normalize = np.trapz(normalize, GRID_1.x, axis=0)
     states = states / np.sqrt(normalize)
-    print(states.shape)
+    print(states.shape, 'finished calculation of state' , i)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-    os.makedirs('/work/kk472919/hamiltonian/statesData/', exist_ok=True)
-    np.save('/work/kk472919/hamiltonian/statesData/pot{}'.format(para.fields[pot_index]), states)
+    os.makedirs('/work/kk472919/hamiltonian/statesData/pot{}/'.format(para.fields[n]), exist_ok=True)
+    np.save('/work/kk472919/hamiltonian/statesData/pot{}/state_{}.npy'.format(para.fields[n], i), states)
     print('finished and saved')
-    return energies , states
+
+    return states
 
 
 

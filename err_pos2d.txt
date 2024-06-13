@@ -1,9 +1,2 @@
 [INFO] Module Python/3.10.4 loaded.
-Traceback (most recent call last):
-  File "/rwthfs/rz/cluster/home/kk472919/PhD/BO_parallel/code/pos2D.py", line 7, in <module>
-    ps.solve_ham2D( energy , states, n)
-  File "/rwthfs/rz/cluster/home/kk472919/PhD/BO_parallel/code/pos_solver.py", line 175, in solve_ham2D
-    normalize = np.trapz(states_squared, BO_array, axis=3)
-  File "/home/kk472919/.local/lib/python3.10/site-packages/numpy/lib/function_base.py", line 4979, in trapz
-    ret = (d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0).sum(axis)
-numpy.core._exceptions._ArrayMemoryError: Unable to allocate 226. GiB for an array with shape (150, 150, 300, 299, 15) and data type float64
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=45877535.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.

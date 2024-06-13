@@ -1,6 +1,5 @@
 import pos_solver as ps
 
 n = 0 #index of parafields amplitude list
-
-print(energy , states)
-ps.solve_combine2D(0)
+for j in range(15):
+    ps.combine2D(0, i = j)
