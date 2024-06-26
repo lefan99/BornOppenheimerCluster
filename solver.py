@@ -250,8 +250,8 @@ class solver():
 
         #Build Hamiltonian for interpolation case
         if para.potential_mode == 'interp':
-            self.V_el_conf= diags(-para.e * conf.interpolation( para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.potential_index[field_index]))
-            self.V_hl_conf= diags( para.e * conf.interpolation(-para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.potential_index[field_index]))
+            self.V_el_conf= diags(-para.e * conf.interpolation_high( para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.potential_index[field_index]))
+            self.V_hl_conf= diags( para.e * conf.interpolation_high(-para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.potential_index[field_index]))
 
         #0D confinement case using the erf with a gaussain envelope in the Y axis
         if para.potential_mode == 'dot':
