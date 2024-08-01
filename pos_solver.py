@@ -122,10 +122,10 @@ def retrieve_array1D(n):
 
     for i , x in enumerate( BO_array):
 
-        if os.path.exists('/hpcwork/kk472919/hamiltonian1D/rel_data/states/pot-{}/com_x{}.npy'.format(n, x)):
+        if os.path.exists('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(n, x)):
        
-            BO_energy[ i] = np.load('/hpcwork/kk472919/hamiltonian1D/rel_data/energies/pot-{}/com_x{}.npy'.format(n, x)) 
-            state = np.load('/hpcwork/kk472919/hamiltonian1D/rel_data/states/pot-{}/com_x{}.npy'.format(n, x ))
+            BO_energy[ i] = np.load('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}/com_x{}.npy'.format(n, x)) 
+            state = np.load('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(n, x ))
             BO_states[:,:, i] = state * np.sign(state)
 
     print('finished loading')
@@ -152,6 +152,45 @@ def retrieve_array2D(pot_index):
     
     print('finished loading')
     return BO_energy, BO_states
+
+def solve_2D_full(BO_energy , BO_states , n , k_energy = 15):
+    ''' solves the POS hamiltonian returns normalized wavefunctions and stores solutions, k_energy determines the amount of eigenvalues that should be solved for'''
+    GRID = grid(1, 0 ,1 ,0 , para.o, para.com_width , para.o, para.com_width )
+
+    BO_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
+    Ham = laplacian(GRID)
+    V_BO = diags(BO_energy.flatten())
+
+    H = Ham.Hkin + V_BO
+    energies, states = eigsh(H , k = k_energy, which='SA') 
+    #states = states.astype(np.float32)
+    #BO_states = BO_states.astype(np.float32)
+    shape = (para.m, para.n , para.o , para.o , 1) 
+    BO_states = np.reshape(BO_states , newshape = (shape) )
+    shape_states = ( 1, 1 , para.o, para.o, k_energy ) 
+    states = np.reshape( states , newshape = (shape_states)) 
+    print('array mem size: ', BO_states.nbytes , states.nbytes)
+    states = BO_states * states
+#Normalize the exciton wave function using trapezoidal integration.
+    states_squared = np.abs(states)**2
+    normalize = np.trapz(states_squared, BO_array, axis=3)
+    normalize = np.trapz(normalize, BO_array, axis=2)
+    print(normalize.shape)
+    normalize = np.trapz(normalize, GRID_1.y, axis=1)
+    normalize = np.trapz(normalize, GRID_1.x, axis=0)
+    states = states / np.sqrt(normalize)
+
+#Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
+    os.makedirs('/work/kk472919/hamiltonian/statesData/pot{}/'.format(para.fields[n]), exist_ok=True)
+    np.save('/work/kk472919/hamiltonian/statesData/pot{}/state.npy'.format(para.fields[n]), states)
+    os.makedirs('/work/kk472919/hamiltonian/energiesData/', exist_ok=True)
+    np.save('/work/kk472919/hamiltonian/energiesData/pot{}'.format(para.fields[n]), energies) 
+    print('finished and saved')
+
+    return energies, states
+
+
+
 
 def solve_ham2D(BO_energy , BO_states , n , k_energy = 15):
     ''' solves the POS hamiltonian returns normalized wavefunctions and stores solutions, k_energy determines the amount of eigenvalues that should be solved for'''
@@ -232,10 +271,10 @@ def solve_ham1D(BO_energy , BO_states , n , k_energy = 15):
     print(states.shape)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-    os.makedirs('/hpcwork/kk472919/hamiltonian1D/statesData/', exist_ok=True)
-    os.makedirs('/hpcwork/kk472919/hamiltonian1D/energiesData/', exist_ok=True)
-    np.save('/hpcwork/kk472919/hamiltonian1D/statesData/pot-{}'.format(n), states)
-    np.save('/hpcwork/kk472919/hamiltonian1D/energiesData/pot-{}'.format(n), energies) 
+    os.makedirs('/work/kk472919/hamiltonian1D_2/statesData/', exist_ok=True)
+    os.makedirs('/work/kk472919/hamiltonian1D_2/energiesData/', exist_ok=True)
+    np.save('/work/kk472919/hamiltonian1D_2/statesData/pot{}'.format(n), states)
+    np.save('/work/kk472919/hamiltonian1D_2/energiesData/pot{}'.format(n), energies) 
     print('finished and saved')
     return energies , states
 

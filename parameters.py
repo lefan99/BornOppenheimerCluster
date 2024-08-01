@@ -1,5 +1,6 @@
 from scipy import constants as const
 import numpy as np
+import pandas as pd 
 
 #Define physical constants in standard units
 epsilon = const.epsilon_0
@@ -23,16 +24,21 @@ r_0 = 3.9/epsilon_r * 1e-9
 #Simulation Parameters
 #eigenstates=400 #Amount of eigenstates to solve for
 #Geometry
-m = 150             # Number of xpoints
+m = 250             # Number of xpoints
 x_width = 20e-9
-n = 150             # Number of ypoints
+n = 250             # Number of ypoints
 y_width = 20e-9
-o = 200             # Number of compoints
-com_width = 200e-9
+o = 100             # Number of compoints
+com_width = 75e-9
 
 eigenstates_relative = 200
 
 potential_mode = 'interp'
+
+if potential_mode == 'dot_interp':
+    fields = ['dot']
+    sigma = [0.0]
+
 
 if potential_mode == 'erf':
     #fields = np.arange(0e-3, 1025e-3, 25e-3)
@@ -43,7 +49,18 @@ if potential_mode == 'erf':
 if potential_mode == 'interp':
     #potential_index = range(10)
     potential_index = [0]
-    fields = [-10, -15, -20, -25, -30, -35]
+    fields_1 = list(pd.read_csv('../COMSOL/fine_sweep.csv').columns)
+    del fields_1[-1]#columns have the fields strength, delete the last column bc it does not belong with the other column, rest of code sorts the column by field strength. and puts them into a str for in order to be readable by the solver code. (pandas df needs columns str name to find the right column)
+    
+    fields = []
+
+    for field in fields_1:
+
+        if 'Unnamed' not in field:
+            fields.append(eval(field))
+
+    fields = sorted(fields)
+    fields = [str(i) for i in fields]
 
     sigma = [20e-9 * np.sqrt(2)]
 

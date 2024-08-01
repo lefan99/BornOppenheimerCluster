@@ -59,10 +59,9 @@ def mev_to_field(x, sigma = para.sigma/np.sqrt(2)):
     return x /1e3 / (sigma*np.sqrt(np.pi/2)) /1e6
 
 
-def h_bar_omega(energy, n= 10000):
+def h_bar_omega( emin = -0.232 , emax = -0.218 ,n= 10000):
     '''Return the energy range of the exciton states, n is number of array entries. Is used as the input of the delta function in the calcualation of the osci strength'''
-    dif = abs( min(energy) - max(energy))
-    return np.linspace( min(energy) -.1 * dif , max(energy) + .05 *dif, n)
+    return np.linspace( emin, emax, n)
 
 
 def plot_osci_strength( x , optical, h_bar_omega, scale = 0.5 , save = False , name = 'oscillator_strength_density.pdf'):
@@ -95,6 +94,6 @@ def r_square2D( state_n = 15 , dim = para.m , arr = box_array):
 
 
 def r_square1D( state_n = 15 , dim = para.o , arr = BO_array):
-    r_sq = np.zeros([ dim, 15])
+    r_sq = np.zeros([ dim, state_n])
     for j in range(dim):
         r_sq[i,j,:] = arr[i]**2 + arr[j]**2

@@ -16,11 +16,11 @@
 
 #SBATCH --time=10:00:00
 
-#SBATCH --array=0-199
+#SBATCH --array=90-125
 
-#SBATCH --error=/home/kk472919/PhD/BO_parallel/output/COM_calc_%A_%a.err
+#SBATCH --error=/home/kk472919/PhD/BO_parallel/output/Error_%A_%a.err
 
-#SBATCH --output=/home/kk472919/PhD/BO_parallel/output/REL_out_%A_%a.txt
+#SBATCH --output=/home/kk472919/PhD/BO_parallel/output/OUTPUT_%A_%a.txt
 
 
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 

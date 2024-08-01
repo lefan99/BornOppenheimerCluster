@@ -16,7 +16,7 @@
 
 #SBATCH --time=10:00:00
 
-#SBATCH --array=0-299
+#SBATCH --array=0-99
 
 #SBATCH --error=/home/kk472919/PhD/BO_parallel/output/COM_calc_%A_%a.err
 
@@ -26,4 +26,4 @@
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 
 
 ml load Python
-python -u relative.py ${SLURM_ARRAY_TASK_ID} 300 0
+python -u relative.py ${SLURM_ARRAY_TASK_ID} 100 0

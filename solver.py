@@ -148,7 +148,7 @@ class solver1D():
     ''' Solver class for a single COM point in 1D (x), in BO approximation'''
 
     def __init__(self, x_com_index, field_index):
-        self.field_index = field_index
+        self.field_index = para.fields[field_index]
         self.BOx_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
         self.current_xcom = self.BOx_array[x_com_index]
         self.current_pot = para.fields[field_index]
@@ -158,7 +158,7 @@ class solver1D():
         self.Vkey = diags(Keyldish(np.sqrt(self.GRID.X.reshape(-1)**2 + self.GRID.Y.reshape(-1)**2))) 
         self._potential()
         self.H = self.lap.Hkin + self.Vkey + self.V_hl_conf + self.V_el_conf 
-        print('calculating COM(x direction) index' ,x_com_index, 'at position' , self.current_xcom)
+        print('calculating COM(x direction) index' ,x_com_index, 'at position' , self.current_xcom , 'and field' , self.current_pot)
         self._solve()
         self._order()
         self._mls_state()
@@ -210,10 +210,10 @@ class solver1D():
         optical_order = np.argsort(k_l_square)
         mls = np.argmax(k_l_square)
         print(self.energies[mls])
-        os.makedirs('/hpcwork/kk472919/hamiltonian1D/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs('/hpcwork/kk472919/hamiltonian1D/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save('/hpcwork/kk472919/hamiltonian1D/rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
-        np.save('/hpcwork/kk472919/hamiltonian1D/rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
+        os.makedirs('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
+        np.save('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
 
 
 
@@ -257,6 +257,12 @@ class solver():
         if para.potential_mode == 'dot':
             self.V_el_conf = diags(-para.e * conf.V_dot( self.current_pot , para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.m_valence/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
             self.V_hl_conf = diags(para.e * conf.V_dot( self.current_pot , -para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, -para.m_conduction/para.M*self.GRID.Y.reshape(-1) + self.current_ycom, self.sigma , self.sigma))
+        if para.potential_mode == 'dot_interp':
+            self.V_el_conf = diags(-para.e * conf.dot_comsol( para.m_valence/para.M*self.GRID.X.reshape(-1) + self.current_xcom, para.m_valence/para.M*self.GRID.Y.reshape(-1) + self.current_ycom))
+            self.V_hl_conf = diags(para.e * conf.dot_comsol( -para.m_conduction/para.M*self.GRID.X.reshape(-1) + self.current_xcom, -para.m_conduction/para.M*self.GRID.Y.reshape(-1) + self.current_ycom))
+
+
+
 
     
     def _solve(self):
