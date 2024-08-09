@@ -86,14 +86,64 @@ def plot_osci_strength( x , optical, h_bar_omega, scale = 0.5 , save = False , n
         plt.show()
 
 def r_square2D( state_n = 15 , dim = para.m , arr = box_array):
-
-    r_sq = np.zeros([ dim, dim , 15])
+    '''gives r^2 in karthesian coordinates array for the the 2D case used for plotting purposes'''
+    r_sq = np.zeros([ dim, dim , state_n])
     for i in range(dim):
         for j in range(dim):
             r_sq[i,j,:] = arr[i]**2 + arr[j]**2
+    return r_sq
+
+def r_2D(state_n , dim = para.m , arr = box_array):
+    '''helper function outputs x**2+y**2 array'''
+    r_sq=np.zeros([dim , dim , state_n])
+    for i in range(dim):
+        for j in range(dim):
+            r_sq[i,j,:] = np.sqrt(arr[i]**2 + arr[j]**2)
+    return r_sq 
 
 
 def r_square1D( state_n = 15 , dim = para.o , arr = BO_array):
+    '''see above but 1D case'''
     r_sq = np.zeros([ dim, state_n])
     for j in range(dim):
         r_sq[i,j,:] = arr[i]**2 + arr[j]**2
+    return r_sq
+
+def eh_dist(state , r , X =  BO_array, x = box_array):
+    '''returns the average distance between electron and hole squareroot(<r^2>),'''
+
+    dim = len(state.shape)-3 #dimensinon determination whtere 0D confinement or 1D confinement
+    for i in range(dim):
+        integral = np.trapz(state**2 , X , axis=2)  
+        integral = np.trapz(integral , X, axis =2)
+    integral = integral*r
+    integral = np.trapz(integral, x , axis=0)
+    integral = np.trapz(integral, x , axis=0)
+    return np.sqrt(integral)
+
+
+def COM_pos(state , X =  BO_array, x = box_array , dim= 15):
+    '''returns <X> COM for the 1D confinement case'''
+
+    dim = len(state.shape)-3 #dimensinon determination whtere 0D confinement or 1D confinement
+    X1 = np.reshape(X, (len(X) , dim))
+    for i in range(dim):
+        integral = np.trapz(state**2 ,  x , axis=0)
+        integral = np.trapz(integral, x , axis=0)
+    integral = integral * X1
+    integral = np.trapz(integral , X, axis =0)
+    return integral
+
+
+def COM_pos_square(state , X =  BO_array, x = box_array):
+    '''returns <X^2> COM for the 1D confinement case'''
+
+    dim = len(state.shape)-3 #dimensinon determination whtere 0D confinement or 1D confinement
+    X1 = np.reshape(X, (len(X) , dim))
+    for i in range(dim):
+        integral = np.trapz(state**2 ,  x , axis=0)
+        integral = np.trapz(integral, x , axis=0)
+    integral = integral * X1**2
+    integral = np.trapz(integral , X, axis =0)
+    return integral
+

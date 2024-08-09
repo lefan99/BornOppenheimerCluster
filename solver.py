@@ -10,6 +10,8 @@ import sys
 import os
 import parameters as para
 import confining_potential as conf
+import postprocessing as post
+
 
 class grid():
     '''Simple Class to hold the necessary data for the construction of the grid. Given the necessary geometric input parameters,
@@ -144,6 +146,29 @@ def Keyldish(r):
     V = -para.c * np.pi / (2*para.epsilon_r*para.r_0) * (struve(0, r/para.r_0) - yv(0, r/para.r_0))
     return V
 
+
+
+def variance(state, n = 4):
+    '''helper function to calculate the localization of a given state for the relative part of the wavefunction'''
+    integral_sq = state**2 * post.r_square2D(n)
+    integral_sq = np.trapz(integral_sq , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+    integral_sq = np.trapz(integral_sq , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+    
+
+    integral = state**2 * post.r_2D(n)
+    integral = np.trapz(integral , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+    integral = np.trapz(integral , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+
+    return integral_sq - integral**2
+
+def radius(state, n=4):
+    '''helper function for determining the radius, for the search on the bound state'''
+    integral_sq = state**2 * post.r_square2D(n)
+    integral_sq = np.trapz(integral_sq , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+    integral_sq = np.trapz(integral_sq , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+    return np.sqrt(integral_sq) 
+
+
 class solver1D():
     ''' Solver class for a single COM point in 1D (x), in BO approximation'''
 
@@ -183,7 +208,7 @@ class solver1D():
         self.energies , self.states = eigsh(self.H, k=para.eigenstates_relative, which='SA')
         t2 = time()
         t = (t2-t1)/60
-        print( 'finished! time elapsed (min): ' , t , 'energy eigenwert'  , self.energies) 
+        print( 'finished! time elapsed (min): ' , t ) 
 
     def _order(self):
         '''Method used to order the results'''
@@ -205,15 +230,32 @@ class solver1D():
 
     def _mls_state(self):
         '''Method for determining the most localized state at the middlei and saving as a .npy file'''
+        
+        #integral = np.trapz(np.abs(self.states[int(para.m/2)-5:int(para.m/2)+5 , int(para.n/2)-5:int(para.n/2)+5 , 0 , 0,:])**2 , np.linspace(-para.x_width , para.x_width , para.m, endpoint =True)[int(para.m/2)-5:int(para.m/2)+5], axis = 0)
+        #integral = np.trapz(integral,np.linspace(-para.y_width , para.y_width , para.n, endpoint =True)[int(para.n/2)-5:int(para.n/2)+5], axis = 0)
 
-        k_l_square = np.abs(self.states[int(para.m/2),int(para.n/2),0, 0,:])**2
+        #k_l_square = radius(self.states[:,:,0,0,:] , para.eigenstates_relative)
+        k_l_square = variance(self.states[:,:,0,0,:] , para.eigenstates_relative)
+        #k_l_square = np.abs(self.states[int(para.m/2),int(para.n/2),0, 0,:])**2
         optical_order = np.argsort(k_l_square)
         mls = np.argmax(k_l_square)
-        print(self.energies[mls])
+        print('energies: ' , np.sort(self.energies[:10]/para.joul_to_eV) , 'most localized state: ' , self.energies[mls]/para.joul_to_eV  ) 
+        print(sorted(k_l_square)[para.eigenstates_relative-4:] , 'COMPARE SECOND MLS TO MLS ENERGY:' , self.energies[optical_order[-2]]/para.joul_to_eV )
+        #print('energy spectrum' , np.asarray(sorted(self.energies))[:4]/para.joul_to_eV)
+        ordered_states = self.states[:, :, 0 , 0,optical_order]
+        print(variance(ordered_states[:, :, -4:]))
+        #print('LOWEST RADIUS STATE:' , radius(ordered_states[:, :, -6:], 6))
+        dif = np.trapz( ordered_states[:, : ,-1] - ordered_states[:,:,-2] , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
+        dif = np.trapz( dif , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
+        print(dif)
+        #print(self.energies[mls])
+        print(np.unravel_index(np.argmax(self.states[:,:,0,0,mls], keepdims = True), (150,150)))
         os.makedirs('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
         os.makedirs('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
         np.save('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
         np.save('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
+
+        print('--------------')
 
 
 
