@@ -122,10 +122,10 @@ def retrieve_array1D(n):
 
     for i , x in enumerate( BO_array):
 
-        if os.path.exists('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(n, x)):
+        if os.path.exists(para.path_0D +'rel_data/states/pot{}/com_x{}.npy'.format(n, x)):
        
-            BO_energy[ i] = np.load('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}/com_x{}.npy'.format(n, x)) 
-            state = np.load('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(n, x ))
+            BO_energy[ i] = np.load(para.path_0D +'rel_data/energies/pot{}/com_x{}.npy'.format(n, x)) 
+            state = np.load(para.path_0D +'rel_data/states/pot{}/com_x{}.npy'.format(n, x ))
             BO_states[:,:, i] = state * np.sign(state)
 
     print('finished loading')
@@ -145,8 +145,8 @@ def retrieve_array2D(pot_index):
 
             #if os.path.exists('/work/hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y)):
 
-            BO_energy[ i , j] = np.load('/work/kk472919/hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y)) 
-            state = np.load('/work/kk472919/hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y ))
+            BO_energy[ i , j] = np.load(para.path_0D +'rel_data/energies/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y)) 
+            state = np.load(para.path_0D +'rel_data/states/pot{}/com_x{}_y{}.npy'.format(para.fields[pot_index], x, y ))
 
             BO_states[:,:, i , j] = state * np.sign(state)
     
@@ -181,10 +181,10 @@ def solve_2D_full(BO_energy , BO_states , n , k_energy = 15):
     states = states / np.sqrt(normalize)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-    os.makedirs('/work/kk472919/hamiltonian/statesData/pot{}/'.format(para.fields[n]), exist_ok=True)
-    np.save('/work/kk472919/hamiltonian/statesData/pot{}/state.npy'.format(para.fields[n]), states)
-    os.makedirs('/work/kk472919/hamiltonian/energiesData/', exist_ok=True)
-    np.save('/work/kk472919/hamiltonian/energiesData/pot{}'.format(para.fields[n]), energies) 
+    os.makedirs(para.path_0D +'statesData/pot{}/'.format(para.fields[n]), exist_ok=True)
+    np.save(para.path_0D +'statesData/pot{}/state.npy'.format(para.fields[n]), states)
+    os.makedirs(para.path_0D +'energiesData/', exist_ok=True)
+    np.save(para.path_0D +'energiesData/pot{}'.format(para.fields[n]), energies) 
     print('finished and saved')
 
     return energies, states
@@ -203,8 +203,8 @@ def solve_ham2D(BO_energy , BO_states , n , k_energy = 15):
     H = Ham.Hkin + V_BO
     energies, states = eigsh(H , k = k_energy, which='SA') 
 
-    os.makedirs('/work/kk472919/hamiltonian/energiesData/', exist_ok=True)
-    np.save('/work/kk472919/hamiltonian/energiesData/pot{}'.format(para.fields[n]), energies) 
+    os.makedirs(para.path_0D +'energiesData/', exist_ok=True)
+    np.save(para.path_0D +'energiesData/pot{}'.format(para.fields[n]), energies) 
     os.makedirs('/work/kk472919/temp/', exist_ok = True)
     np.save('/work/kk472919/temp/states.npy', states)
     np.save('/work/kk472919/temp/BO_states.npy', BO_states)
@@ -237,8 +237,8 @@ def combine2D(n, k_energy =15 , i = 0):
     print(states.shape, 'finished calculation of state' , i)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-    os.makedirs('/work/kk472919/hamiltonian/statesData/pot{}/'.format(para.fields[n]), exist_ok=True)
-    np.save('/work/kk472919/hamiltonian/statesData/pot{}/state_{}.npy'.format(para.fields[n], i), states)
+    os.makedirs(para.path_0D +'statesData/pot{}/'.format(para.fields[n]), exist_ok=True)
+    np.save(para.path_0D +'statesData/pot{}/state_{}.npy'.format(para.fields[n], i), states)
     print('finished and saved')
 
     return states
@@ -271,10 +271,10 @@ def solve_ham1D(BO_energy , BO_states , n , k_energy = 15):
     print(states.shape)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-    os.makedirs('/work/kk472919/hamiltonian1D_2/statesData/', exist_ok=True)
-    os.makedirs('/work/kk472919/hamiltonian1D_2/energiesData/', exist_ok=True)
-    np.save('/work/kk472919/hamiltonian1D_2/statesData/pot{}'.format(n), states)
-    np.save('/work/kk472919/hamiltonian1D_2/energiesData/pot{}'.format(n), energies) 
+    os.makedirs(para.path_0D +'statesData/', exist_ok=True)
+    os.makedirs(para.path_0D +'energiesData/', exist_ok=True)
+    np.save(para.path_0D +'statesData/pot{}'.format(n), states)
+    np.save(para.path_0D +'energiesData/pot{}'.format(n), energies) 
     print('finished and saved')
     return energies , states
 

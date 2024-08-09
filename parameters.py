@@ -2,6 +2,10 @@ from scipy import constants as const
 import numpy as np
 import pandas as pd 
 
+
+path_1D = '/work/kk472919/hamiltonian1D_2/' #absolute path for storage
+path_0D = '/work/kk472919/hamiltonian0D/'
+
 #Define physical constants in standard units
 epsilon = const.epsilon_0
 e = const.e
@@ -28,7 +32,7 @@ m = 150             # Number of xpoints
 x_width = 20e-9
 n = 150             # Number of ypoints
 y_width = 20e-9
-o = 50              # Number of compoints
+o = 200             # Number of compoints
 com_width = 50e-9
 
 eigenstates_relative = 200

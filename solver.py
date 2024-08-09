@@ -250,10 +250,10 @@ class solver1D():
         print(dif)
         #print(self.energies[mls])
         print(np.unravel_index(np.argmax(self.states[:,:,0,0,mls], keepdims = True), (150,150)))
-        os.makedirs('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save('/work/kk472919/hamiltonian1D_2/rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
-        np.save('/work/kk472919/hamiltonian1D_2/rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
+        os.makedirs(para.path_1D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs(para.path_1D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
+        np.save(para.path_1D +'rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
 
         print('--------------')
 
@@ -342,10 +342,10 @@ class solver():
         mls = np.argmax(k_l_square)
         
 
-        os.makedirs('/work/kk472919/hamiltonian/rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs('/work/kk472919/hamiltonian/rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save('/work/kk472919/hamiltonian/rel_data/states/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
-        np.save('/work/kk472919/hamiltonian/rel_data/energies/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
+        os.makedirs(para.path_0D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+        os.makedirs(para.path_0D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+        np.save(para.path_0D +'rel_data/states/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.states[:,:,0, 0,mls])
+        np.save(para.path_0D +'rel_data/energies/pot{}/com_x{}_y{}.npy'.format(self.current_pot, self.current_xcom , self.current_ycom), self.energies[mls])
 
 
 
