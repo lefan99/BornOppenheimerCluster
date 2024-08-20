@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=Exciton1D_BO
 
-#SBATCH --comment="Exciton ED in BornOppenheimer approximation, treating 1D"
+#SBATCH --comment="Test calculation try finding the numerical reasons for instabilities, test parameter: relative grid size"
 
 #SBATCH --account=rwth1610
 
@@ -16,7 +16,7 @@
 
 #SBATCH --time=10:00:00
 
-#SBATCH --array=116
+#SBATCH --array=0-199
 
 #SBATCH --error=/home/kk472919/PhD/BO_parallel/output/Error_%A_%a.err
 
@@ -26,4 +26,4 @@
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 
 
 ml load Python
-python -u relative1D.py ${SLURM_ARRAY_TASK_ID} 
+python -u relative_parallel.py 116 ${SLURM_ARRAY_TASK_ID} 

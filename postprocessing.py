@@ -152,6 +152,6 @@ def get_pot_landscape(potential , path = para.path_1D , x_index = para.o, x_widt
     bo_energy = np.zeros(x_index)
     bo_array = np.linspace(-x_width ,x_width ,x_index , endpoint=True)
     for i,x in enumerate(bo_array):
-        bo_energy[i] = np.load(para.path_1D + 'rel_data/energies/pot{}/com_x{}.npy'.format(n,x))/para.joul_to_eV
+        bo_energy[i] = np.load(para.path_1D + 'rel_data/energies/pot{}/com_x{}.npy'.format(potential,x))/para.joul_to_eV
 
     return bo_energy

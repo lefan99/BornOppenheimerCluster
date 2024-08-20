@@ -235,8 +235,8 @@ class solver1D():
         #integral = np.trapz(integral,np.linspace(-para.y_width , para.y_width , para.n, endpoint =True)[int(para.n/2)-5:int(para.n/2)+5], axis = 0)
 
         #k_l_square = radius(self.states[:,:,0,0,:] , para.eigenstates_relative)
-        k_l_square = variance(self.states[:,:,0,0,:] , para.eigenstates_relative)
-        #k_l_square = np.abs(self.states[int(para.m/2),int(para.n/2),0, 0,:])**2
+        #k_l_square = variance(self.states[:,:,0,0,:] , para.eigenstates_relative)
+        k_l_square = np.abs(self.states[int(para.m/2),int(para.n/2),0, 0,:])**2
         optical_order = np.argsort(k_l_square)
         mls = np.argmax(k_l_square)
         print('energies: ' , np.sort(self.energies[:10]/para.joul_to_eV) , 'most localized state: ' , self.energies[mls]/para.joul_to_eV  ) 
@@ -245,11 +245,11 @@ class solver1D():
         ordered_states = self.states[:, :, 0 , 0,optical_order]
         print(variance(ordered_states[:, :, -4:]))
         #print('LOWEST RADIUS STATE:' , radius(ordered_states[:, :, -6:], 6))
-        dif = np.trapz( ordered_states[:, : ,-1] - ordered_states[:,:,-2] , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
-        dif = np.trapz( dif , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
-        print(dif)
+        #dif = np.trapz( ordered_states[:, : ,-1] - ordered_states[:,:,-2] , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
+        #dif = np.trapz( dif , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
+        #print(dif)
         #print(self.energies[mls])
-        print(np.unravel_index(np.argmax(self.states[:,:,0,0,mls], keepdims = True), (150,150)))
+        #print(np.unravel_index(np.argmax(self.states[:,:,0,0,mls], keepdims = True), (150,150)))
         os.makedirs(para.path_1D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
         os.makedirs(para.path_1D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
         np.save(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
@@ -409,6 +409,9 @@ def main():
     #[x,y,1,n] where the first two indices correspond to relative coordinates, com direction is trivial
     #and n labels the eigenstates. This reshaping is consistent with the flattened encoding,
     #since we used the numpy unravel routine to define the Hamiltonian.
+
+
+
     
     new_shape = GRID.X.shape + (para.eigenstates_relative,)
     print('shape of states' ,states.shape ,'new shape' , new_shape, 'GRID.X.shape' , GRID.X.shape , 'eigenstates_relative' , para.eigenstates_relative) 
