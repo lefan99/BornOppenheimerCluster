@@ -26,4 +26,4 @@
 ###Python system first and second arg give the X/Y COM coordinate by index in the BO_array, third arg gives the potential by index. 
 
 ml load Python
-python -u relative_parallel.py 116 ${SLURM_ARRAY_TASK_ID} 
+python -u relative1D.py ${SLURM_ARRAY_TASK_ID} 
