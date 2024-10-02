@@ -29,10 +29,10 @@ r_0 = 3.9/epsilon_r * 1e-9
 #eigenstates=400 #Amount of eigenstates to solve for
 #Geometry
 m = 200             # Number of xpoints
-x_width = 25e-9
+x_width = 60e-9
 n = 200             # Number of ypoints
-y_width = 25e-9
-o = 100             # Number of compoints
+y_width = 60e-9
+o = 200             # Number of compoints
 com_width = 150e-9
 
 eigenstates_relative = 200

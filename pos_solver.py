@@ -122,10 +122,10 @@ def retrieve_array1D(n):
 
     for i , x in enumerate( BO_array):
 
-        if os.path.exists(para.path_0D +'rel_data/states/pot{}/com_x{}.npy'.format(n, x)):
+        if os.path.exists(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(n, x)):
        
-            BO_energy[ i] = np.load(para.path_0D +'rel_data/energies/pot{}/com_x{}.npy'.format(n, x)) 
-            state = np.load(para.path_0D +'rel_data/states/pot{}/com_x{}.npy'.format(n, x ))
+            BO_energy[ i] = np.load(para.path_1D +'rel_data/energies/pot{}/com_x{}.npy'.format(n, x)) 
+            state = np.load(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(n, x ))
             BO_states[:,:, i] = state * np.sign(state)
 
     print('finished loading')
@@ -271,10 +271,10 @@ def solve_ham1D(BO_energy , BO_states , n , k_energy = 15):
     print(states.shape)
 
 #Save the normalized, sorted and processed states for further use. One can do any further postprocessing with them now.
-    os.makedirs(para.path_0D +'statesData/', exist_ok=True)
-    os.makedirs(para.path_0D +'energiesData/', exist_ok=True)
-    np.save(para.path_0D +'statesData/pot{}'.format(n), states)
-    np.save(para.path_0D +'energiesData/pot{}'.format(n), energies) 
+    os.makedirs(para.path_1D +'statesData/', exist_ok=True)
+    os.makedirs(para.path_1D +'energiesData/', exist_ok=True)
+    np.save(para.path_1D +'statesData/pot{}'.format(n), states)
+    np.save(para.path_1D +'energiesData/pot{}'.format(n), energies) 
     print('finished and saved')
     return energies , states
 
