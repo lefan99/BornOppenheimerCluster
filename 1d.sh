@@ -14,7 +14,7 @@
 
 #SBATCH --mem-per-cpu=2600M
 
-#SBATCH --time=1:00:00
+#SBATCH --time=4:00:00
 
 #SBATCH --array=0-199
 
