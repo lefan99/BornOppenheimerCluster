@@ -4,6 +4,7 @@
 import numpy as np 
 from scipy.sparse import diags, csr_matrix, coo_array
 from scipy.sparse.linalg import eigsh
+from scipy.linalg import eig
 from time import time
 from scipy.special import struve, yv, erf
 import sys
@@ -151,7 +152,7 @@ def Keyldish(r):
 def variance(state, n = 4):
     '''helper function to calculate the localization of a given state for the relative part of the wavefunction'''
     integral_sq = state**2 * post.r_square2D(n)
-    integral_sq = np.trapz(integral_sq , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
+    integral_sq = np.trapz(integral_sq , np.linspace(-x_width , para.x_width , para.m , endpoint=True), axis = 0)
     integral_sq = np.trapz(integral_sq , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis = 0)
     
 
@@ -181,9 +182,10 @@ class solver1D():
         self.GRID = grid(para.m, para.x_width, para.n, para.y_width, 1, 0 , 1 , 0)
         self.lap = laplacian(self.GRID)
         self.Vkey = diags(Keyldish(np.sqrt(self.GRID.X.reshape(-1)**2 + self.GRID.Y.reshape(-1)**2))) 
+        print(self.GRID.X.reshape(-1))
         self._potential()
         self.H = self.lap.Hkin + self.Vkey + self.V_hl_conf + self.V_el_conf 
-        print('calculating COM(x direction) index' ,x_com_index, 'at position' , self.current_xcom , 'and field' , self.current_pot)
+        print('------calculating COM(x direction) index' ,x_com_index, 'at position' , self.current_xcom , 'and field' , self.current_pot, '-------------------')
         self._solve()
         self._order()
         self._mls_state()
@@ -243,7 +245,7 @@ class solver1D():
         print(sorted(k_l_square)[para.eigenstates_relative-4:] , 'COMPARE SECOND MLS TO MLS ENERGY:' , self.energies[optical_order[-2]]/para.joul_to_eV )
         #print('energy spectrum' , np.asarray(sorted(self.energies))[:4]/para.joul_to_eV)
         ordered_states = self.states[:, :, 0 , 0,optical_order]
-        print(variance(ordered_states[:, :, -4:]))
+        #print(variance(ordered_states[:, :, -4:]))
         #print('LOWEST RADIUS STATE:' , radius(ordered_states[:, :, -6:], 6))
         #dif = np.trapz( ordered_states[:, : ,-1] - ordered_states[:,:,-2] , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)
         #dif = np.trapz( dif , np.linspace(-para.x_width , para.x_width , para.m , endpoint=True), axis =0)

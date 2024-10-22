@@ -275,6 +275,7 @@ def solve_ham1D(BO_energy , BO_states , n , k_energy = 15):
     os.makedirs(para.path_1D +'energiesData/', exist_ok=True)
     np.save(para.path_1D +'statesData/pot{}'.format(n), states)
     np.save(para.path_1D +'energiesData/pot{}'.format(n), energies) 
+    print(energies/para.joul_to_eV) 
     print('finished and saved')
     return energies , states
 
