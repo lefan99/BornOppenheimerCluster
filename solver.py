@@ -18,12 +18,12 @@ class grid():
     '''Simple Class to hold the necessary data for the construction of the grid. Given the necessary geometric input parameters,
     which are defined in parameters.py, this just sets up the necessary meshgrids for the 1D confinement case.'''
     def __init__(self, x_points, x_width, y_points, y_width, com_x_points, com_x_width , com_y_points , com_y_width):
-        self.dx = 2*x_width / x_points
+        self.dx = (15*1e-9+x_width) / x_points
         self.dy = 2*y_width / y_points 
         self.dxcom = 2*com_x_width / com_x_points
         self.dycom = 2*com_y_width / com_y_points
 
-        self.x = np.linspace(-x_width, x_width, x_points ,endpoint=True)
+        self.x = np.linspace(-15*1e-9, x_width, x_points ,endpoint=True)
         self.y = np.linspace(-y_width, y_width, y_points ,endpoint=True)
         self.xcom = np.linspace(-com_x_width, com_x_width, com_x_points ,endpoint=True)
         self.ycom = np.linspace(-com_y_width , com_y_width , com_y_points , endpoint = True)
@@ -173,7 +173,7 @@ def radius(state, n=4):
 class solver1D():
     ''' Solver class for a single COM point in 1D (x), in BO approximation'''
 
-    def __init__(self, x_com_index, field_index):
+    def __init__(self, x_com_index, field_index, interacting=True):  #if interacting is set to False the program calculates the non interacting electron hole case.
         self.field_index = para.fields[field_index]
         self.BOx_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
         self.current_xcom = self.BOx_array[x_com_index]
@@ -182,9 +182,11 @@ class solver1D():
         self.GRID = grid(para.m, para.x_width, para.n, para.y_width, 1, 0 , 1 , 0)
         self.lap = laplacian(self.GRID)
         self.Vkey = diags(Keyldish(np.sqrt(self.GRID.X.reshape(-1)**2 + self.GRID.Y.reshape(-1)**2))) 
-        print(self.GRID.X.reshape(-1))
         self._potential()
-        self.H = self.lap.Hkin + self.Vkey + self.V_hl_conf + self.V_el_conf 
+        if interacting:
+            self.H = self.lap.Hkin + self.Vkey + self.V_hl_conf + self.V_el_conf 
+        else:
+            self.H = self.lap.Hkin + self.V_hl_conf + self.V_el_conf 
         print('------calculating COM(x direction) index' ,x_com_index, 'at position' , self.current_xcom , 'and field' , self.current_pot, '-------------------')
         self._solve()
         self._order()
@@ -252,11 +254,16 @@ class solver1D():
         #print(dif)
         #print(self.energies[mls])
         #print(np.unravel_index(np.argmax(self.states[:,:,0,0,mls], keepdims = True), (150,150)))
-        os.makedirs(para.path_1D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
-        os.makedirs(para.path_1D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
-        np.save(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
-        np.save(para.path_1D +'rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
-
+        if interacting:
+            os.makedirs(para.path_1D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+            os.makedirs(para.path_1D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+            np.save(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
+            np.save(para.path_1D +'rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
+        else: 
+            os.makedirs(para.non_interacting_1D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
+            os.makedirs(para.non_interacting_1D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
+            np.save(para.non_interacting_1D +'rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
+            np.save(para.non_interacting_1D +'rel_data/energies/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.energies[mls])
         print('--------------')
 
 

@@ -18,21 +18,26 @@ def main():
         
             if eval(field) > -10:
                 pot.append(index)
-
+    print(pot[2])
     
 #   if 'Unnamed' in pot:
 #       print('error unnamed')
 #       exit()
-    for i in [2]: #n equal to potential index , sys arg gives index on BO array
-        solver.solver1D(  int(sys.argv[1]) , pot[i])
-    #solver.solver1D(int(sys.argv[1]) , pot[2])
+    #for i in range(int(len(pot)/2) , len(pot) ): #n equal to potential index , sys arg gives index on BO array
+        #solver.solver1D(  int(sys.argv[1]) , pot[i])
+    #solver.solver1D(int(sys.argv[1]) , pot[50])
     #   print( ' -----------calc done for xcom ='   , sys.argv[1] , 'given as index of BO_array' , "with potential index" , pot[i], '-----------------------') 
     #print(pot[50])
-    #en, st = pos.retrieve_array1D(para.fields[pot[50]])
-    #print(en/para.joul_to_eV)
-    #pos.solve_ham1D(en,st, para.fields[pot[50]])
-    #print('finished')
 
+    if int(sys.argv[1]) in pot:
+
+        en, st = pos.retrieve_array1D(para.fields[pot[2]])
+        print(en/para.joul_to_eV)
+        pos.solve_ham1D(en,st, para.fields[pot[2]])
+        print('finished', para.fields[pot[2]])
+    else:
+
+        print('MEN VA FAN!' , para.fields[int(sys.argv[1])])
 
 if __name__ =='__main__':
     main()

@@ -2,7 +2,7 @@ from scipy import constants as const
 import numpy as np
 import pandas as pd 
 
-
+non_interacting_1D = '/work/kk472919/non_interacting_1D/'
 path_1D = '/work/kk472919/hamiltonian1D_2/' #absolute path for storage
 path_0D = '/work/kk472919/hamiltonian0D/'
 
@@ -28,10 +28,10 @@ r_0 = 3.9/epsilon_r * 1e-9
 #Simulation Parameters
 #eigenstates=400 #Amount of eigenstates to solve for
 #Geometry
-m = 400             # Number of xpoints
-x_width = 35e-9
-n = 400             # Number of ypoints
-y_width = 35e-9
+m = 200             # Number of xpoints
+x_width = 55e-9
+n = 200             # Number of ypoints
+y_width = 15e-9
 o = 200             # Number of compoints
 com_width = 150e-9
 

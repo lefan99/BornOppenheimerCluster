@@ -19,6 +19,7 @@ def V_dot( f_x , x , y , sigma_x , sigma_y ):
 
 
 
+
 def interpolation(x, n , interp_type = 'cubic'):
     '''Return the interpolated potential from the COMSOL Data for a flat positional array x. Parameter n determines the top-Gate voltage.'''
 
