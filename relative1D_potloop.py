@@ -23,8 +23,8 @@ def main():
 #   if 'Unnamed' in pot:
 #       print('error unnamed')
 #       exit()
-    for i in [2]: #n equal to potential index , sys arg gives index on BO array
-        solver.solver1D(  int(sys.argv[1]) , pot[i])
+    for i in range(40): #n equal to potential index , sys arg gives index on BO array
+        solver.solver1D(  int(sys.argv[1]) , pot[i] , False)
     #solver.solver1D(int(sys.argv[1]) , pot[2])
     #   print( ' -----------calc done for xcom ='   , sys.argv[1] , 'given as index of BO_array' , "with potential index" , pot[i], '-----------------------') 
     #print(pot[50])

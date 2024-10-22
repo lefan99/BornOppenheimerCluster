@@ -175,6 +175,7 @@ class solver1D():
 
     def __init__(self, x_com_index, field_index, interacting=True):  #if interacting is set to False the program calculates the non interacting electron hole case.
         self.field_index = para.fields[field_index]
+        self.interacting = interacting
         self.BOx_array = np.linspace(-para.com_width, para.com_width, para.o, endpoint=True)
         self.current_xcom = self.BOx_array[x_com_index]
         self.current_pot = para.fields[field_index]
@@ -254,7 +255,7 @@ class solver1D():
         #print(dif)
         #print(self.energies[mls])
         #print(np.unravel_index(np.argmax(self.states[:,:,0,0,mls], keepdims = True), (150,150)))
-        if interacting:
+        if self.interacting:
             os.makedirs(para.path_1D +'rel_data/states/pot{}'.format(self.current_pot), exist_ok=True)
             os.makedirs(para.path_1D +'rel_data/energies/pot{}'.format(self.current_pot), exist_ok=True)
             np.save(para.path_1D +'rel_data/states/pot{}/com_x{}.npy'.format(self.current_pot, self.current_xcom ), self.states[:,:,0, 0,mls])
