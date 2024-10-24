@@ -18,7 +18,7 @@ def main():
         
             if eval(field) > -10:
                 pot.append(index)
-    print(pot[2])
+    print(pot[0])
     
 #   if 'Unnamed' in pot:
 #       print('error unnamed')

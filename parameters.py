@@ -28,9 +28,9 @@ r_0 = 3.9/epsilon_r * 1e-9
 #Simulation Parameters
 #eigenstates=400 #Amount of eigenstates to solve for
 #Geometry
-m = 400             # Number of xpoints
+m = 300             # Number of xpoints
 x_width = 35e-9
-n = 400             # Number of ypoints
+n = 300             # Number of ypoints
 y_width = 35e-9
 o = 200             # Number of compoints
 com_width = 150e-9
